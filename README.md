@@ -1,2 +1,2 @@
 # golearning
-Random code whilst learning code
+Random code whilst learning golang
