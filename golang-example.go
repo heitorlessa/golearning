@@ -55,8 +55,6 @@ func namedFunctionWithParameters(message string) string {
 	fmt.Println("Message to be printed -> ", message)
 }
 
-	// :: Struct
-
 // binary Function
 type binaryFunction func(int, int) int
 
@@ -98,5 +96,50 @@ func main() {
     fmt.Println(o.name, x, y)
     fmt.Println(o.fn(x, y))
 }
+
+	// :: Struct
+
+type Circle struct {
+	x, y, z float64
+}
+
+// Init
+var c Circle
+d := new(Circle)
+test := Circle(0, 0, 5)
+
+// Accessing "Fields"
+test.x
+test.y
+test.y
+
+func circleArea(c *Circle) float64 {
+  return math.Pi * c.r*c.r
+}
+
+c := Circle{0, 0, 5}
+fmt.Println(circleArea(c))
+
+// Creating a method instead
+// func (var *Struct) functionName returnType
+func (c *Circle) area() float64{
+	return math.Pi * c.r*c.r
+}
+
+// other struct example
+type Name struct {
+    First  string
+    Middle string
+    Last   string
+}
+
+// "method" declaration 2
+func (n Name) String() string {
+    return fmt.Sprintf("%s %c. %s", n.First, n.Middle[0], strings.ToUpper(n.Last))
+}
+
+// Constructing it
+n := Name{"William", "Mike", "Smith"}
+    fmt.Printf("%s", n.String())
 
 
