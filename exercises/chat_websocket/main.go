@@ -29,7 +29,6 @@ func main() {
 	
 	// http.HandleFunc('routeToURL' 'Handler')
 	http.HandleFunc("/", &templateHandler{filename: "chat.html"})
-	})
 
 	if err := http.ListenAndServe(":8080", nil); err != nil {
 		log.Fatal("ListenAndServe: ", err)
