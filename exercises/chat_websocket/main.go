@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"text/template"
 	"path/filepath"
+	"sync"
 )
 
 type templateHandler struct {
