@@ -16,7 +16,7 @@ type templateHandler struct {
 }
 
 // Handles HTTP Request (ServeHTTP method)
-func (t *templatehandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	
 	t.once.Do(func() {
 		
