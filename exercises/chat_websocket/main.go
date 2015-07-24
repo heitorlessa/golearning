@@ -3,23 +3,22 @@ package main
 import (
 	"log"
 	"net/http"
-	"text/template"
 	"path/filepath"
 	"sync"
+	"text/template"
 )
 
 type templateHandler struct {
-
-	once			sync.Once
-	filename		string
-	templ 			*template.Template
+	once     sync.Once
+	filename string
+	templ    *template.Template
 }
 
 // Handles HTTP Request (ServeHTTP method)
 func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	
+
 	t.once.Do(func() {
-		
+
 		t.templ = template.Must(template.ParseFiles(filepath.Join("templates", t.filename)))
 	})
 
@@ -28,12 +27,12 @@ func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	
+
 	r := newRoom()
 
 	// http.HandleFunc('routeToURL' 'Handler')
 	http.Handle("/", &templateHandler{filename: "chat.html"})
-	http.Handle('/room', r)
+	http.Handle("/room", r)
 
 	// get the room going (initialize that infinite loop in threads [goroutine])
 	go r.run()

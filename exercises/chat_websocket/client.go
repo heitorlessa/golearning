@@ -15,7 +15,7 @@ type client struct {
 func (c *client) read() {
 	for {
 
-		if _, msg, err := c.socket.ReadMessage(); err == nill {
+		if _, msg, err := c.socket.ReadMessage(); err == nil {
 			// read from channel '<-' (in-memory message queue [thread-safe])
 			c.room.forward <- msg
 		} else {
