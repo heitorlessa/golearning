@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"net/http"
 	"path/filepath"
@@ -28,6 +29,9 @@ func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 
+	var addr = flag.String("addr", ":8080", "Address of application.")
+	flag.Parse()
+
 	r := newRoom()
 
 	// http.HandleFunc('routeToURL' 'Handler')
@@ -37,7 +41,10 @@ func main() {
 	// get the room going (initialize that infinite loop in threads [goroutine])
 	go r.run()
 
-	if err := http.ListenAndServe(":8080", nil); err != nil {
+	// Log web server startup
+	log.Println("Starting web server on...", *addr)
+
+	if err := http.ListenAndServe(*addr, nil); err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
 }
