@@ -11,6 +11,7 @@ type client struct {
 	room *room
 }
 
+// read method that reads from message (ReadMessage through websocket) from 'forward' chan
 func (c *client) read() {
 	for {
 		
@@ -28,6 +29,7 @@ func (c *client) read() {
 	c.socket.Close()
 }
 
+// write method that accepts messages from 'send' chan and writes (WriteMessage 'Text' message through websocket) 
 func (c *client) write() {
 	for msg := range c.send {
 		if err := c.socket.WriteMessage(websocket.TextMessage, msg); err != nil {
