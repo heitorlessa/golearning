@@ -1,5 +1,12 @@
 package main
 
+const (
+	socketBufferSize 	= 1024
+	messageBufferSize 	= 256
+)
+
+var upgrader = &websocket.Upgrader{ReadBufferSize: socketBufferSize, WriteBufferSize: socketBufferSize}
+
 type room struct {
 
 	// Channel 'Forward' will be holding incoming messages
@@ -13,6 +20,16 @@ type room struct {
 
 	// holds all clients in this room
 	clients map[*client]bool
+}
+
+// helper to easily create new room (initialize map & channels)
+func newRoom() *room {
+	return &room{
+		forward: 	make(chan []byte),
+		join: 		make(chan *client),
+		leave:		make(chan *client),
+		clients:	make(map[*client]bool),
+	}
 }
 
 func (r *room) run() {
@@ -47,8 +64,36 @@ func (r *room) run() {
 					close(client.send)
 				}
 			}
-
 		}
 	}
+}
+
+func (r *room) ServeHTTP(w. http.ResponseWriter, req *http.Request) {
+
+	// need to upgrade socket (HTTP Request) into webSocket
+	socket, err := upgrader.Upgrade(w, req, nil)
+
+	if err != nil {
+		log.Fatal("ServeHTTP:", err)
+		return
+	}
+
+	// creates a client that will join a channel later on
+	client := &client{
+		socket: 	socket,
+		send: 		make(chan []byte, messageBufferSize),
+		room:		r, // weird as it is this ',' is correct
+	}
+
+	// makes client join (in other words, sends message to 'join' channel)
+	r.join <- client
+
+	// makes client leave but defer it to ensure clients successfuly join first
+	defer func() { r.leave <- client } () // similar to JS promises
+	go client.write() // goroutine, in other words, run this portion of code in a new thread
+	client.read()
 
 }
+
+
+
