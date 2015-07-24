@@ -6,10 +6,10 @@ type room struct {
 	forward chan []byte
 
 	// Clients wishing to join the room
-	join chan []byte
+	join chan *client
 
 	// clients wishing to leave the room
-	leave chan []byte
+	leave chan *client
 
 	// holds all clients in this room
 	clients map[*client]bool
