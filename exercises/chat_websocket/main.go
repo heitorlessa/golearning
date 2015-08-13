@@ -7,6 +7,8 @@ import (
 	"path/filepath"
 	"sync"
 	"text/template"
+	"trace"
+	"os"
 )
 
 type templateHandler struct {
@@ -33,6 +35,7 @@ func main() {
 	flag.Parse()
 
 	r := newRoom()
+	r.tracer = trace.New(os.Stdout)
 
 	// http.HandleFunc('routeToURL' 'Handler')
 	http.Handle("/", &templateHandler{filename: "chat.html"})

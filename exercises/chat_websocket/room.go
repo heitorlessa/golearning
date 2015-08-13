@@ -4,6 +4,7 @@ import (
 	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
+	"trace"
 )
 
 const (
@@ -26,6 +27,11 @@ type room struct {
 
 	// holds all clients in this room
 	clients map[*client]bool
+
+	// tracer will receive trace information of activity
+	// in the room
+	tracer trace.Tracer
+
 }
 
 // helper to easily create new room (initialize map & channels)
@@ -46,11 +52,13 @@ func (r *room) run() {
 		case client := <-r.join:
 			// joining
 			r.clients[client] = true
+			r.tracer.Trace("New client joined")
 
 		case client := <-r.leave:
 			// leaving
 			delete(r.clients, client)
 			close(client.send)
+			r.tracer.Trace("Client left")
 
 		// forward message to all clients if a message is ever sent to 'forward' channel
 		case msg := <-r.forward:
@@ -62,6 +70,7 @@ func (r *room) run() {
 				// in which will write down the message to browser's web socket
 				case client.send <- msg:
 					// send message
+				r.tracer.Trace(" -- failed to send, cleaned up client")
 
 				// in case client doesnt accept the message, removes the client and tide things up
 				default:
