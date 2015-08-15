@@ -70,13 +70,14 @@ func (r *room) run() {
 				// in which will write down the message to browser's web socket
 				case client.send <- msg:
 					// send message
-				r.tracer.Trace(" -- failed to send, cleaned up client")
+				r.tracer.Trace(" -- sent to client")
 
 				// in case client doesnt accept the message, removes the client and tide things up
 				default:
 					// failed to send message
 					delete(r.clients, client)
 					close(client.send)
+					r.tracer.Trace(" -- failed to send, cleaned up client")
 				}
 			}
 		}
