@@ -4,11 +4,13 @@ import (
 	"flag"
 	"log"
 	"net/http"
-	"os"
+	// disabled temporarily as it's not in use
+	//"os"
 	"path/filepath"
 	"sync"
 	"text/template"
-	"trace"
+	// disabled temporarily as it's not in use
+	//"trace"
 )
 
 type templateHandler struct {
@@ -38,7 +40,7 @@ func main() {
 	// r.tracer = trace.New(os.Stdout)
 
 	// http.HandleFunc('routeToURL' 'Handler')
-	http.Handle("/", &templateHandler{filename: "chat.html"})
+	http.Handle("/chat", MustAuth(&templateHandler{filename: "chat.html"}))
 	http.Handle("/room", r)
 
 	// get the room going (initialize that infinite loop in threads [goroutine])
