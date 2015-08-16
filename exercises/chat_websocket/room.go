@@ -31,7 +31,6 @@ type room struct {
 	// tracer will receive trace information of activity
 	// in the room
 	tracer trace.Tracer
-
 }
 
 // helper to easily create new room (initialize map & channels)
@@ -41,6 +40,7 @@ func newRoom() *room {
 		join:    make(chan *client),
 		leave:   make(chan *client),
 		clients: make(map[*client]bool),
+		tracer:  trace.Off(),
 	}
 }
 
@@ -70,7 +70,7 @@ func (r *room) run() {
 				// in which will write down the message to browser's web socket
 				case client.send <- msg:
 					// send message
-				r.tracer.Trace(" -- sent to client")
+					r.tracer.Trace(" -- sent to client")
 
 				// in case client doesnt accept the message, removes the client and tide things up
 				default:
