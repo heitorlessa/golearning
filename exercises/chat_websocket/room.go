@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/gorilla/websocket"
+	"github.com/stretchr/objx"
 	"log"
 	"net/http"
 	"trace"
@@ -17,7 +18,7 @@ var upgrader = &websocket.Upgrader{ReadBufferSize: socketBufferSize, WriteBuffer
 type room struct {
 
 	// Channel 'Forward' will be holding incoming messages
-	forward chan []byte
+	forward chan *message
 
 	// Clients wishing to join the room
 	join chan *client
@@ -36,7 +37,7 @@ type room struct {
 // helper to easily create new room (initialize map & channels)
 func newRoom() *room {
 	return &room{
-		forward: make(chan []byte),
+		forward: make(chan *message),
 		join:    make(chan *client),
 		leave:   make(chan *client),
 		clients: make(map[*client]bool),
@@ -94,11 +95,18 @@ func (r *room) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	authCookie, err := req.Cookie("auth")
+	if err != nil {
+		log.Fatal("Failed to get auth cookie:", err)
+		return
+	}
+
 	// creates a client that will join a channel later on
 	client := &client{
-		socket: socket,
-		send:   make(chan []byte, messageBufferSize),
-		room:   r, // weird as it is this ',' is correct
+		socket:   socket,
+		send:     make(chan *message, messageBufferSize),
+		room:     r, // weird as it is this ',' is correct
+		userData: objx.MustFromBase64(authCookie.Value),
 	}
 
 	// makes client join (in other words, sends message to 'join' channel)
