@@ -39,8 +39,15 @@ func main() {
 	r := newRoom()
 	// r.tracer = trace.New(os.Stdout)
 
-	// http.HandleFunc('routeToURL' 'Handler')
+	// http.Handle('routeToURL' 'Handler')
 	http.Handle("/chat", MustAuth(&templateHandler{filename: "chat.html"}))
+
+	// No need for MustAuth wrapper otherwise it goes to an infinite redirection loop
+	http.Handle("/login", &templateHandler{filename: "login.html"})
+
+	// Since we don't need to maintain any state (object) we can use HandleFunc and pass a function to it
+	http.HandleFunc("/auth/", loginHandler)
+
 	http.Handle("/room", r)
 
 	// get the room going (initialize that infinite loop in threads [goroutine])
