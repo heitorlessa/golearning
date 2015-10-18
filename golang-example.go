@@ -142,4 +142,20 @@ func (n Name) String() string {
 n := Name{"William", "Mike", "Smith"}
     fmt.Printf("%s", n.String())
 
+// Finding a type (reflection) with reflect package
 
+fmt.Println(reflect.TypeOf(resp))
+
+
+// Convert struct that is usually a response from an API call (aws-sdk-go) to []byte so it can be written in a file
+
+svc := ec2.New(&aws.Config{Region: aws.String("eu-west-1")})
+
+resp, err := svc.DescribeInstances(nil)
+if err != nil {
+	panic(err)
+}
+
+if err := ioutil.WriteFile("/tmp/ec2Response", []byte(fmt.Sprintf("%v", *resp)), 0644); err != nil {
+	fmt.Errorf("Error happened here: ", err)
+}
