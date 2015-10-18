@@ -159,3 +159,20 @@ if err != nil {
 if err := ioutil.WriteFile("/tmp/ec2Response", []byte(fmt.Sprintf("%v", *resp)), 0644); err != nil {
 	fmt.Errorf("Error happened here: ", err)
 }
+
+
+// dir(object)-like in Go to find out methods of a given interface/struct
+
+config := aws.NewConfig().WithRegion("eu-west-1")
+client := sns.New(config)
+
+fmt.Println("Reflect Rocks!!!")
+SNStype := reflect.TypeOf(client)
+// TypeOf returns an interface with its type and also returns awesome methods like:
+// NumMethod = How many methods a given interface/struct has
+// Method(index) = Method which also exposes Name of the method ;)
+
+for i := 0; i < SNStype.NumMethod(); i++ {
+        method := SNStype.Method(i)
+        fmt.Println(method.Name)
+}
